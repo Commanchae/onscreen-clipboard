@@ -60,34 +60,67 @@ class Ui_MainWindow(object):
     
     def addToClipboardMethod(self):
         text = clipboard.paste()
-        Clip = clipItem(text)
-        print(text)
-        self.verticalLayout_2.insertWidget(self.verticalLayout_2.count(), Clip.verticalLayoutWidget)
+        Clip = clipItem(text, self.verticalLayout_2, self)
+        self.verticalLayout_2.insertWidget(self.verticalLayout_2.count(), Clip.horizontalLayoutWidget)
         self.clipboard_content.append(Clip)
         self.retranslateUi(MainWindow)
+    
+    def removeFromClipboardMethod(self, widgetCalled):
+        print("Removed!?!?")
+        print(self)
+        print("WidgetCalled", widgetCalled)
+        self.verticalLayout_2.removeWidget(widgetCalled)
+
 
 class clipItem():
-    def __init__(self, clipname):
+    def __init__(self, clipname, parent, application):
         self.text = clipname
+        self.parent_widget = parent
+        self.app = application
         self.textEdit = QtWidgets.QTextEdit(self.text)
         self.textEdit.setReadOnly(True)
         self.copyButton = QtWidgets.QToolButton()
         self.copyButton.clicked.connect(self.copyFromClip)
+        self.removeButton = QtWidgets.QToolButton()
+        self.removeButton.clicked.connect(self.removeFromParent)
 
-        self.verticalLayoutWidget = QtWidgets.QWidget()
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(0,0,50,50))
-        self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
-        self.verticalLayout = QtWidgets.QHBoxLayout(self.verticalLayoutWidget)
-        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.verticalLayout.addWidget(self.textEdit)
-        self.verticalLayout.addWidget(self.copyButton)
+
+        self.horizontalLayoutWidget = QtWidgets.QWidget()
+        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(0,0,50,50))
+        self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
+        self.horizontalLayout = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget)
+        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.horizontalLayout.addWidget(self.textEdit)
+        print("ClipItem", self.horizontalLayoutWidget)
+
+
+        self.vLW = QtWidgets.QWidget()
+        self.vLW.setGeometry(QtCore.QRect(0,0,25,50))
+        self.vL = QtWidgets.QVBoxLayout(self.vLW)
+        self.vL.setContentsMargins(0,0,0,0)
+        self.horizontalLayout.addWidget(self.copyButton)
+        self.horizontalLayout.addWidget(self.removeButton)
+
+        self.horizontalLayout.addWidget(self.vLW)
+
 
     def returnItems(self):
         return self.widgets
     
     def copyFromClip(self):
         clipboard.copy(self.text)
+        
+    def removeFromParent(self):
+        self.horizontalLayoutWidget.setParent(None)
+        # self.textEdit.destroy()
+        # self.copyButton.destroy()
+        # self.removeButton.destroy()
+        # self.horizontalLayoutWidget.destroy()
+        # self.parent_widget.removeWidget(self.horizontalLayoutWidget)
+        # self.app.removeFromClipboardMethod(self.horizontalLayoutWidget)
+        # print(self.app)
+        # print("Destroyed")
 
 
 if __name__ == "__main__":
